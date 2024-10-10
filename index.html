@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect based on language</title>
+    <script>
+        // الحصول على لغة المتصفح
+        const userLang = navigator.language || navigator.userLanguage;
+
+        // طباعة اللغة للتأكد من القيمه
+        console.log("User's browser language is:", userLang);
+
+        // إعادة التوجيه بناءً على اللغة
+        if (userLang.startsWith("fr")) {
+            window.location.href = "index-fr.html"; // توجيه للصفحة الفرنسية
+        } else if (userLang.startsWith("ar")) {
+            window.location.href = "index-ar.html"; // توجيه للصفحة العربية
+        } else {
+            // خيار افتراضي: يمكن توجيه المستخدم إلى صفحة باللغة الإنجليزية
+            window.location.href = "index-en.html";
+        }
+    </script>
+</head>
+<body>
+    <h1>Redirecting based on your browser language...</h1>
+</body>
+</html>
