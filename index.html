@@ -1,28 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirect based on language</title>
-    <script>
-        // الحصول على لغة المتصفح
-        const userLang = navigator.language || navigator.userLanguage;
-
-        // طباعة اللغة للتأكد من القيمه
-        console.log("User's browser language is:", userLang);
-
-        // إعادة التوجيه بناءً على اللغة
-        if (userLang.startsWith("fr")) {
-            window.location.href = "index-fr.html"; // توجيه للصفحة الفرنسية
-        } else if (userLang.startsWith("ar")) {
-            window.location.href = "ar"; // توجيه للصفحة العربية
-        } else {
-            // خيار افتراضي: يمكن توجيه المستخدم إلى صفحة باللغة الإنجليزية
-            window.location.href = "index-en.html";
-        }
-    </script>
+    <title>كتابة إلى ملف JSON على GitHub</title>
 </head>
 <body>
-    <h1>Redirecting based on your browser language...</h1>
+    <h2>تعديل ملف JSON:</h2>
+    <textarea id="jsonInput" rows="10" cols="50">{"name": "John", "age": 30, "city": "New York"}</textarea>
+    <br>
+    <button id="saveBtn">حفظ التغييرات</button>
+    <pre id="response"></pre>
+
+    <script>
+        const apiUrl = 'https://api.github.com/repos/eidicu/John/contents/data.json'; // استبدلها بالمعلومات الصحيحة
+        const token = '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'; // استخدم الرمز هنا
+
+        // حفظ التغييرات
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const updatedData = document.getElementById('jsonInput').value;
+
+            // جلب SHA للملف الحالي
+            fetch(apiUrl, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            })
+            .then(response => response.json())
+            .then(fileData => {
+                const sha = fileData.sha; // SHA الخاص بالملف الحالي
+
+                // تحديث محتوى الملف
+                const updateContent = {
+                    message: "تحديث ملف JSON",
+                    content: btoa(unescape(encodeURIComponent(updatedData))), // تحويل إلى Base64
+                    sha: sha
+                };
+
+                return fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateContent)
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.content) {
+                    document.getElementById('response').textContent = 'تم تحديث الملف بنجاح!';
+                } else {
+                    document.getElementById('response').textContent = 'حدث خطأ في تحديث الملف.';
+                }
+            })
+            .catch(error => console.error('خطأ:', error));
+        });
+    </script>
 </body>
 </html>
